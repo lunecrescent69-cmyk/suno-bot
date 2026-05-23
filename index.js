@@ -1,13 +1,50 @@
 const http = require('http');
+const { chromium } = require('playwright');
 
 const server = http.createServer(async (req, res) => {
 
-  const url = new URL(req.url, `http://${req.headers.host}`);
-  const lyrics = url.searchParams.get('lyrics');
+  try {
 
-  console.log('Received lyrics:', lyrics);
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const lyrics = url.searchParams.get('lyrics') || 'test lyrics';
 
-  res.end('DONE');
+    console.log('Received lyrics:', lyrics);
+
+    const browser = await chromium.launch({
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu'
+      ]
+    });
+
+    const page = await browser.newPage();
+
+    console.log('Opening Suno...');
+
+    await page.goto('https://suno.com/create', {
+      waitUntil: 'domcontentloaded',
+      timeout: 30000
+    });
+
+    console.log('Suno opened');
+
+    await page.waitForTimeout(5000);
+
+    await browser.close();
+
+    res.end('DONE');
+
+  } catch (err) {
+
+    console.error(err);
+
+    res.statusCode = 500;
+    res.end('ERROR');
+
+  }
 
 });
 
