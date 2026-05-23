@@ -44,7 +44,11 @@ const createButton = page.getByRole('button', {
 await createButton.click();
 
 console.log('Generate clicked');
-    console.log('Waiting for render...');
+    console.log('Music generation started');
+
+res.end('MUSIC_STARTED');
+
+await browser.close();
 
 await page.waitForTimeout(15000);
     console.log('Checking page...');
