@@ -35,6 +35,25 @@ const server = http.createServer(async (req, res) => {
 await textarea.fill(lyrics);
 
 console.log('Lyrics inserted');
+    await page.waitForTimeout(3000);
+
+const buttons = await page.locator('button').all();
+
+for (const button of buttons) {
+
+  const text = await button.textContent();
+
+  if (text && text.toLowerCase().includes('create')) {
+
+    console.log('Create button found');
+
+    await button.click();
+
+    console.log('Generate clicked');
+
+    break;
+  }
+}
 
     await page.waitForTimeout(5000);
 
