@@ -44,6 +44,23 @@ const createButton = page.getByRole('button', {
 await createButton.click();
 
 console.log('Generate clicked');
+    console.log('Waiting for render...');
+
+await page.waitForTimeout(60000);
+
+const links = await page.locator('a').all();
+
+for (const link of links) {
+
+  const href = await link.getAttribute('href');
+
+  if (href && href.includes('.mp3')) {
+
+    console.log('MP3 FOUND:', href);
+
+    break;
+  }
+}
 
     await page.waitForTimeout(5000);
 
