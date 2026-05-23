@@ -46,7 +46,8 @@ await createButton.click();
 console.log('Generate clicked');
     console.log('Waiting for render...');
 
-await page.waitForTimeout(60000);
+await page.waitForTimeout(15000);
+    console.log('Checking page...');
 
 const links = await page.locator('a').all();
 
