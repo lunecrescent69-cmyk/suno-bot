@@ -1,29 +1,61 @@
+const http = require('http');
 const { chromium } = require('playwright');
 
-(async () => {
+const server = http.createServer(async (req, res) => {
+
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const lyrics = url.searchParams.get('lyrics') || 'test lyrics';
+
+  console.log('Received lyrics');
+
   const browser = await chromium.launch({
-    headless: false
+    headless: true
   });
 
-  const context = await browser.newContext({
-    storageState: 'auth.json'
-  });
-
-  const page = await context.newPage();
+  const page = await browser.newPage();
 
   console.log('Opening Suno...');
 
-  await page.goto('https://suno.com');
+  await page.goto('https://suno.com/create');
 
-  console.log('Waiting for login...');
+  await page.waitForTimeout(8000);
 
-  await page.waitForTimeout(60000);
+  const textarea = await page.locator('textarea').first();
 
-  await context.storageState({
-    path: 'auth.json'
+  await textarea.fill(lyrics);
+
+  console.log('Lyrics inserted');
+
+  await page.waitForTimeout(3000);
+
+  const buttons = await page.locator('button').all();
+
+  for (const button of buttons) {
+    const text = await button.textContent();
+
+    if (text && text.toLowerCase().includes('create')) {
+      console.log('Create button found');
+
+      await button.click();
+
+      console.log('Generate clicked');
+
+      break;
+    }
+  }
+
+  await page.screenshot({
+    path: 'proof.png'
   });
 
-  console.log('Session saved');
+  console.log('Screenshot saved');
 
   await browser.close();
-})();
+
+  res.end('DONE');
+
+});
+
+server.listen(3000, () => {
+  console.log('Bot server running on port 3000');
+});
