@@ -30,6 +30,11 @@ const server = http.createServer(async (req, res) => {
     });
 
     console.log('Suno opened');
+    const textarea = await page.locator('textarea').first();
+
+await textarea.fill(lyrics);
+
+console.log('Lyrics inserted');
 
     await page.waitForTimeout(5000);
 
