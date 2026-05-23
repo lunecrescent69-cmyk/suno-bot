@@ -37,23 +37,13 @@ await textarea.fill(lyrics);
 console.log('Lyrics inserted');
     await page.waitForTimeout(3000);
 
-const buttons = await page.locator('button').all();
+const createButton = page.getByRole('button', {
+  name: /create/i
+});
 
-for (const button of buttons) {
+await createButton.click();
 
-  const text = await button.textContent();
-
-  if (text && text.toLowerCase().includes('create')) {
-
-    console.log('Create button found');
-
-    await button.click();
-
-    console.log('Generate clicked');
-
-    break;
-  }
-}
+console.log('Generate clicked');
 
     await page.waitForTimeout(5000);
 
